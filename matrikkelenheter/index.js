@@ -1,19 +1,12 @@
-const { logConfig } = require('@vtfk/logger')
+const { logger } = require('@vestfoldfylke/loglady')
 const TemplateClient = require('../lib/TemplateClient/TemplateClient')
 const Sjablong = require('@vtfk/sjablong') // Replace placeholders in templates
 const { matrikkelApi } = require('../config')
 const { MatrikkelClient } = require('../lib/KartverketMatrikkelAPI/MatrikkelClient')
 
 module.exports = async function (context, req) {
-  logConfig({
-    prefix: 'azf-matrikkel-proxy - matrikkelenheter',
-    teams: {
-      onlyInProd: false
-    },
-    azure: {
-      context,
-      excludeInvocationId: true
-    }
+  logger.logConfig({
+    prefix: 'azf-matrikkel-proxy - matrikkelenheter'
   })
 
   if (!req.body.matrikkelContext) {

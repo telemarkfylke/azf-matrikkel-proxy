@@ -11,7 +11,7 @@
   },
   "dependencies": {
     "@azure/msal-node": "^2.6.4",
-    "@vtfk/logger": "^6.3.3",
+    "@vestfoldfylke/loglady": "^1.5.0",
     "@vtfk/sjablong": "^1.0.2",
     "node-cache": "^5.1.2",
     "prettify-xml": "^1.2.0",
