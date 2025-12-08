@@ -6,13 +6,14 @@
     "start": "func start",
     "test": "echo \"No tests yet...\""
   },
+  "engines": {
+    "node": ">=18.x"
+  },
   "dependencies": {
     "@azure/msal-node": "^2.6.4",
     "@vtfk/logger": "^6.3.3",
     "@vtfk/sjablong": "^1.0.2",
-    "axios": "^1.6.7",
     "node-cache": "^5.1.2",
-    "node-fetch": "^2.6.7",
     "prettify-xml": "^1.2.0",
     "xml-query": "^1.5.0",
     "xml-reader": "^2.4.3",
