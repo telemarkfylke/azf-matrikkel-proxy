@@ -16,18 +16,19 @@ module.exports = async function (context, req) {
       excludeInvocationId: true
     }
   })
-  let matrikkelContext = TemplateClient.getTemplate('matrikkelContext.xml')
+
   if (!req.body.matrikkelContext) {
     req.body.matrikkelContext = {}
   }
+
   if (req.body.koordinatsystemKodeId !== undefined) {
     req.body.matrikkelContext.koordinatsystemKodeId = req.body.koordinatsystemKodeId
   }
-  matrikkelContext = Sjablong.replacePlaceholders(matrikkelContext, req.body.matrikkelContext)
-  req.matrikkelContext = matrikkelContext
+
+  req.matrikkelContext = Sjablong.replacePlaceholders(TemplateClient.getTemplate('matrikkelContext.xml'), req.body.matrikkelContext)
 
   const client = new MatrikkelClient(matrikkelApi.MATRIKKELAPI_USERNAME, matrikkelApi.MATRIKKELAPI_PASSWORD, 'matrikkelapi/wsapi/v1/StoreServiceWS')
-  let store = await client.callStoreService(req, req.body.items)
+  const store = await client.callStoreService(req, req.body.items)
 
   //   let item
   //   console.log(store[0]["getObjectsResponse"]["return"].item.map(item => item.eierforhold))
@@ -39,10 +40,18 @@ module.exports = async function (context, req) {
   //   }
   // console.log(store[0]["getObjectsResponse"]["return"].item.map(item => item.eierforhold))
   
-  store = flattenObject(store)
+  const flattStore = flattenObject(store)
   try {
-    return { status: 200, body: { store } }
+    return {
+      status: 200,
+      body: {
+        store: flattStore
+      }
+    }
   } catch (error) {
-    return { status: 500, body: error }
+    return {
+      status: 500,
+      body: error
+    }
   }
 }
