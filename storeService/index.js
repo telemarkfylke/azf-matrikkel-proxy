@@ -7,7 +7,7 @@ const { flattenObject } = require('../lib/helpers/flattenObject')
 
 module.exports = async function (context, req) {
   logger.logConfig({
-    prefix: 'azf-matrikkel-proxy - storeService'
+    prefix: 'storeService'
   })
 
   if (!req.body.matrikkelContext) {
@@ -23,17 +23,10 @@ module.exports = async function (context, req) {
   const client = new MatrikkelClient(matrikkelApi.MATRIKKELAPI_USERNAME, matrikkelApi.MATRIKKELAPI_PASSWORD, 'matrikkelapi/wsapi/v1/StoreServiceWS')
   const store = await client.callStoreService(req, req.body.items)
 
-  //   let item
-  //   console.log(store[0]["getObjectsResponse"]["return"].item.map(item => item.eierforhold))
-  //   try {
-  //     item = store[0]["getObjectsResponse"]["return"].item.map(item => item)
-  //   } catch {
-  //     item = {}
-  //     throw new Error('Fant ingen enheter innenfor polygonet')
-  //   }
-  // console.log(store[0]["getObjectsResponse"]["return"].item.map(item => item.eierforhold))
-  
   const flattStore = flattenObject(store)
+  const returnTypeCountObject = client.getReturnTypeCountObject(flattStore)
+  logger.info("Got data from matrikkel StoreServiceWS: {@Data}", returnTypeCountObject)
+
   try {
     return {
       status: 200,

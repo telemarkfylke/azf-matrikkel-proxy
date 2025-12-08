@@ -6,7 +6,7 @@ const { MatrikkelClient } = require('../lib/KartverketMatrikkelAPI/MatrikkelClie
 
 module.exports = async function (context, req) {
   logger.logConfig({
-    prefix: 'azf-matrikkel-proxy - matrikkelenheter'
+    prefix: 'matrikkelenheter'
   })
 
   if (!req.body.matrikkelContext) {
@@ -32,12 +32,13 @@ module.exports = async function (context, req) {
     } else {
       units = result[0]['soap:Envelope']?.['soap:Body'].findMatrikkelenheterResponse.return.item.map(unit => unit.value)
     }
-    console.log(units)
   } else {
     units = result[0].findMatrikkelenheterResponse?.return?.item.map(unit => unit.value)
   }
 
   if (units === undefined || units.length < 0) throw new Error('Fant ingen enheter innenfor polygonet')
+
+  logger.info("Got {MatrikkelUnitCount} units from matrikkel MatrikkelenhetServiceWS", units.length)
 
   try {
     return {
