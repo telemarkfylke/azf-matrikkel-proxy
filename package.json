@@ -1,25 +1,28 @@
 {
-  "name": "azf-matrikkel-proxy",
-  "version": "1.2.0",
-  "description": "API used to contact the matrikkel api using rest",
-  "scripts": {
-    "start": "func start",
-    "test": "echo \"No tests yet...\""
-  },
-  "engines": {
-    "node": ">=18.x"
-  },
-  "dependencies": {
-    "@azure/msal-node": "^3.8.4",
-    "@vestfoldfylke/loglady": "^1.5.0",
-    "@vtfk/sjablong": "^1.0.2",
-    "node-cache": "^5.1.2",
-    "prettify-xml": "^1.2.0",
-    "xml-query": "^1.5.0",
-    "xml-reader": "^2.4.3",
-    "xml2js": "^0.6.2"
-  },
-  "devDependencies": {
-    "@types/node": "^24.10.1"
-  }
+	"name": "azf-matrikkel-proxy",
+	"version": "1.2.0",
+	"description": "API used to contact the matrikkel api using rest",
+	"scripts": {
+		"lint": "biome check",
+		"lint:fix": "biome check --write",
+		"start": "func start",
+		"test": "npm run lint"
+	},
+	"engines": {
+		"node": ">=18.x"
+	},
+	"dependencies": {
+		"@azure/msal-node": "^3.8.4",
+		"@vestfoldfylke/loglady": "^1.5.0",
+		"@vtfk/sjablong": "^1.0.2",
+		"node-cache": "^5.1.2",
+		"prettify-xml": "^1.2.0",
+		"xml-query": "^1.5.0",
+		"xml-reader": "^2.4.3",
+		"xml2js": "^0.6.2"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.3.8",
+		"@types/node": "^24.10.1"
+	}
 }
