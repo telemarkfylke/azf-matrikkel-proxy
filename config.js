@@ -5,18 +5,8 @@ module.exports = {
     MATRIKKELAPI_PASSWORD: process.env.MATRIKKELAPI_PASSWORD || "matrikkel password"
   },
   freg: {
-    appReg: {
-      clientId: process.env.AZF_FREG_CLIENT_ID || "clientId",
-      clientSecret: process.env.AZF_FREG_CLIENT_SECRET || "client secret",
-      scope: process.env.AZF_FREG_SCOPE || "scope"
-    },
-    api: {
-      url: process.env.AZF_FREG_URL || "url",
-      xFunctionsKey: process.env.AZF_FREG_X_FUNCTIONS_KEY || "x-functions-key"
-    }
-  },
-  tenant: {
-    tenantId: process.env.TENANT_ID || "tenant id"
+    scope: process.env.AZF_FREG_SCOPE || "scope",
+    url: process.env.AZF_FREG_URL || "url"
   },
   brreg: {
     main: process.env.BRREG_MAIN || "main url",

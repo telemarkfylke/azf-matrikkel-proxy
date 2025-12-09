@@ -14,10 +14,9 @@
 	"main": "func*/index.js",
 	"dependencies": {
 		"@azure/functions": "^4.10.0",
-		"@azure/msal-node": "^3.8.4",
+		"@azure/identity": "^4.13.0",
 		"@vestfoldfylke/loglady": "^1.5.0",
 		"@vtfk/sjablong": "^1.0.2",
-		"node-cache": "^5.1.2",
 		"prettify-xml": "^1.2.0",
 		"xml-query": "^1.5.0",
 		"xml-reader": "^2.4.3",
