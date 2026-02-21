@@ -48,7 +48,7 @@ const matrikkelEnheter = async (req) => {
     if (units === undefined || units.length < 0) {
       logger.error("Did not find any units inside the provided polygon");
       return {
-        status: 500,
+        status: 500, // TODO: Should this be a 404 or a 200 with an empty array? It depends on how we want to handle this case in the frontend
         jsonBody: {
           error: "Fant ingen enheter innenfor polygonet"
         }

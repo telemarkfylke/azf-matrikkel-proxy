@@ -570,11 +570,33 @@ class MatrikkelClient {
       return body;
     }
 
-    if (Array.isArray(body[0]["soap:Body"].return)) {
-      return body;
+    if (!Array.isArray(body[0]["soap:Body"].return)) {
+      body[0]["soap:Body"].return = [body[0]["soap:Body"].return];
     }
 
-    body[0]["soap:Body"].return = [body[0]["soap:Body"].return];
+    /* NOTE: eierforhold can be an:
+      - object if it contains only one item
+      - an empty string if it contains no items
+      - an array if it contains multiple items
+      😡😱🤦‍♂️ */
+    body[0]["soap:Body"].return = body[0]["soap:Body"].return.map((item) => {
+      if (item.eierforhold === undefined) {
+        return item;
+      }
+
+      if (Array.isArray(item.eierforhold)) {
+        return item;
+      }
+
+      if (item.eierforhold === "") {
+        item.eierforhold = [];
+        return item;
+      }
+
+      item.eierforhold = [item.eierforhold];
+      return item;
+    });
+
     return body;
   }
 
@@ -608,6 +630,29 @@ class MatrikkelClient {
     });
 
     return typeCountObj;
+  }
+
+  sanitizeMatrikkelStoreResponse(body) {
+    if (!Array.isArray(body) || body.length === 0 || body.length > 1 || !body[0]["soap:Body"] || !Array.isArray(body[0]["soap:Body"].return)) {
+      logger.info("sanitizeMatrikkelStoreResponse: Response body is not in expected format. Returning original body");
+      return body;
+    }
+    
+    if (matrikkelApi.MATRIKKELAPI_IGNORE_EIERFORHOLD.length === 0) {
+      logger.info("sanitizeMatrikkelStoreResponse: No eierforhold types configured to ignore. Returning original body.");
+      return body;
+    }
+
+    logger.info("sanitizeMatrikkelStoreResponse: Sanitizing response body by filtering out the following eierforhold types: {@Types}", matrikkelApi.MATRIKKELAPI_IGNORE_EIERFORHOLD);
+    body[0]["soap:Body"].return = body[0]["soap:Body"].return.map((item) => {
+      if (Array.isArray(item.eierforhold)) {
+        item.eierforhold = item.eierforhold.filter((eier) => !matrikkelApi.MATRIKKELAPI_IGNORE_EIERFORHOLD.includes(eier._type));
+      }
+
+      return item;
+    });
+
+    return body;
   }
 }
 

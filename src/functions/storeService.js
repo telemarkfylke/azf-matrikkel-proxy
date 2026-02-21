@@ -28,13 +28,14 @@ const storeService = async (req) => {
     const store = await client.callStoreService(req, requestBody.items);
 
     const flattStore = client.arrayifyStoreResponseBody(flattenObject(store));
-    const returnTypeCountObject = client.getReturnTypeCountObject(flattStore);
+    const sanitizedStore = client.sanitizeMatrikkelStoreResponse(flattStore);
+    const returnTypeCountObject = client.getReturnTypeCountObject(sanitizedStore);
     logger.info("Got data from matrikkel StoreServiceWS: {@Data}", returnTypeCountObject);
 
     return {
       status: 200,
       jsonBody: {
-        store: flattStore
+        store: sanitizedStore
       }
     };
   } catch (error) {

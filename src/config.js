@@ -2,7 +2,8 @@ module.exports = {
   matrikkelApi: {
     MATRIKKELAPI_BASEURL: process.env.MATRIKKELAPI_BASEURL || "matrikkel base url",
     MATRIKKELAPI_USERNAME: process.env.MATRIKKELAPI_USERNAME || "matrikkel username",
-    MATRIKKELAPI_PASSWORD: process.env.MATRIKKELAPI_PASSWORD || "matrikkel password"
+    MATRIKKELAPI_PASSWORD: process.env.MATRIKKELAPI_PASSWORD || "matrikkel password",
+    MATRIKKELAPI_IGNORE_EIERFORHOLD: process.env.MATRIKKELAPI_IGNORE_EIERFORHOLD?.split(",") || []
   },
   freg: {
     scope: process.env.AZF_FREG_SCOPE || "scope",
