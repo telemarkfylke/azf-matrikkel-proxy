@@ -637,7 +637,7 @@ class MatrikkelClient {
       logger.info("sanitizeMatrikkelStoreResponse: Response body is not in expected format. Returning original body");
       return body;
     }
-    
+
     if (matrikkelApi.MATRIKKELAPI_IGNORE_EIERFORHOLD.length === 0) {
       logger.info("sanitizeMatrikkelStoreResponse: No eierforhold types configured to ignore. Returning original body.");
       return body;
