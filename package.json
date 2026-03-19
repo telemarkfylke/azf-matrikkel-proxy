@@ -16,7 +16,7 @@
 	"dependencies": {
 		"@azure/functions": "^4.11.2",
 		"@azure/identity": "^4.13.0",
-		"@vestfoldfylke/loglady": "^1.5.0",
+		"@vestfoldfylke/loglady": "^1.5.2",
 		"@vtfk/sjablong": "^1.0.2",
 		"prettify-xml": "^1.2.0",
 		"xml-query": "^1.5.0",
