@@ -121,7 +121,7 @@ const listFiles = (options) => {
 const readFile = (filename, options) => {
   const cached = loadedFiles.find((f) => f.name === filename);
   if (cached) {
-    if (cached.parsed && options && options.parsed) {
+    if (cached.parsed && options?.parsed) {
       return cached.parsed;
     }
     if (cached.data) {
