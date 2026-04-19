@@ -162,7 +162,7 @@ const readFile = (filename, options) => {
  */
 const findSchemaForNamespace = (namespace, extension) => {
   // Input validation
-  if (!namespace || !namespace.includes("/")) {
+  if (!namespace?.includes("/")) {
     return "";
   }
 
