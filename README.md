@@ -1,16 +1,19 @@
 # Matrikkel proxy
+
 Proxy api for calling the matrikkel api developed by kartverket.
 https://matrikkel.no/matrikkelapi/wsapi/v1/dokumentasjon/index.html
 
 ## Setup
+
 1. Clone the repo
-2. Run ``npm i`` 
+2. Run `npm i`
 3. Create a local.settings.json file and add the environment variables
-4. Run ``func start``
+4. Run `func start`
 
 ## Environment Variables
+
 | Variable                        | Description                                         | Example                                                             |
-|---------------------------------|-----------------------------------------------------|---------------------------------------------------------------------|
+| ------------------------------- | --------------------------------------------------- | ------------------------------------------------------------------- |
 | MATRIKKELAPI_BASEURL            | Endpoint for the matrikkel api                      | https://www.nd.matrikkel.no/                                        |
 | MATRIKKELAPI_USERNAME           | username provided by kartverket                     | [Username]                                                          |
 | MATRIKKELAPI_PASSWORD           | password provided by kartverket                     | [Password]                                                          |
