@@ -13,14 +13,26 @@
     "indentStyle": "space",
     "indentWidth": 2,
     "expand": "auto",
-    "includes": ["**", "!node_modules", "!!package.json"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!!package.json",
+      "!!**/*.yml",
+      "!!**/*.yaml"
+    ]
   },
   "linter": {
     "enabled": true,
     "rules": {
       "preset": "recommended"
     },
-    "includes": ["**", "!node_modules", "!!package.json"]
+    "includes": [
+      "**",
+      "!node_modules",
+      "!!package.json",
+      "!!**/*.yml",
+      "!!**/*.yaml"
+    ]
   },
   "javascript": {
     "formatter": {
