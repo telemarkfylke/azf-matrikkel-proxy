@@ -77,16 +77,21 @@ export function storeRequest(items: readonly ObjectId[], ctx: MatrikkelContext):
 /** Matrikkel couldn't answer the request. `status` is what the API answers its caller. */
 export class MatrikkelError extends Error {
   readonly status: 400 | 502 | 504;
-  constructor(status: 400 | 502 | 504, message: string) {
-    super(message);
+  constructor(status: 400 | 502 | 504, message: string, options?: { cause?: unknown }) {
+    super(message, options);
     this.name = "MatrikkelError";
     this.status = status;
   }
 }
 
-/** Removes namespace prefixes from tags, as the JavaScript version did (`soap:` stays). */
+/**
+ * Removes namespace prefixes from tags, as the JavaScript version did (`soap:` stays). The envelope's
+ * own elements get `soap:` whatever their prefix (`env:`, `SOAP-ENV:` …), so soapBody finds the body
+ * and the compatible endpoints keep their `soap:Envelope` shape.
+ */
 export function cleanUpXml(xml: string): string {
   return xml
+    .replace(/<(\/?)[a-zA-Z][\w.-]*:(Envelope|Header|Body|Fault)(?=[\s>/])/g, "<$1soap:$2")
     .replace(/<([a-zA-Z]):/g, "<")
     .replace(/<\/([a-zA-Z]):/g, "</")
     .replace(/<[a-zA-Z]+[0-9]+:/g, "<")
@@ -97,8 +102,9 @@ export function cleanUpXml(xml: string): string {
 export type ParsedSoap = Record<string, unknown>;
 
 /** The element inside soap:Body (the response or a fault). */
-export function soapBody(parsed: ParsedSoap): Record<string, unknown> | undefined {
-  const envelope = (parsed["soap:Envelope"] ?? parsed.Envelope) as Record<string, unknown> | undefined;
+export function soapBody(parsed: ParsedSoap | null | undefined): Record<string, unknown> | undefined {
+  // xml2js gives null for an empty document
+  const envelope = (parsed?.["soap:Envelope"] ?? parsed?.Envelope) as Record<string, unknown> | undefined;
   return (envelope?.["soap:Body"] ?? envelope?.Body) as Record<string, unknown> | undefined;
 }
 
@@ -116,11 +122,14 @@ export async function postSoap(settings: SoapSettings, service: "MatrikkelenhetS
     });
   } catch (error) {
     const timedOut = (error as Error)?.name === "TimeoutError";
-    throw new MatrikkelError(timedOut ? 504 : 502, timedOut ? `Matrikkel did not answer within ${settings.timeoutMs} ms` : `Could not reach Matrikkel: ${(error as Error)?.message}`);
+    // The network error stays in the cause (logged by the handler), not in the message callers get:
+    // it can name internal hosts and addresses
+    throw new MatrikkelError(timedOut ? 504 : 502, timedOut ? `Matrikkel did not answer within ${settings.timeoutMs} ms` : "Could not reach Matrikkel", { cause: error });
   }
   const text = await response.text();
-  // Matrikkel answers 200 with an HTML page when the credentials are wrong
-  if (text.includes("<!DOCTYPE HTML") || text.includes("401 Unauthorized") || response.status === 401) throw new MatrikkelError(502, "Matrikkel refused the credentials");
+  // Matrikkel answers 200 with an HTML page when the credentials are wrong (the casing varies)
+  const lower = text.toLowerCase();
+  if (lower.includes("<!doctype html") || lower.includes("401 unauthorized") || response.status === 401) throw new MatrikkelError(502, "Matrikkel refused the credentials");
 
   let parsed: ParsedSoap;
   try {
@@ -128,7 +137,10 @@ export async function postSoap(settings: SoapSettings, service: "MatrikkelenhetS
   } catch {
     throw new MatrikkelError(502, `Matrikkel answered ${response.status} with something that isn't XML`);
   }
-  const fault = soapBody(parsed)?.["soap:Fault"] ?? soapBody(parsed)?.Fault;
+  const body = soapBody(parsed);
+  // Without a body the answer would become an empty list, which a caller can't tell from "nothing found"
+  if (!body) throw new MatrikkelError(502, response.ok ? "Matrikkel answered with an unexpected format" : `Matrikkel answered ${response.status}`);
+  const fault = body["soap:Fault"] ?? body.Fault;
   if (fault) {
     const reason = String((fault as Record<string, unknown>).faultstring ?? "unknown fault");
     // Faults from the client's input (e.g. an invalid coordinate system) are the caller's to fix

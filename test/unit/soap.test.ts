@@ -76,6 +76,34 @@ describe("postSoap", () => {
     await assert.rejects(postSoap(settings, "StoreServiceWS", "<x/>"), (e: MatrikkelError) => e.status === 502 && /credentials/.test(e.message));
   });
 
+  test("the HTML login page is recognised whatever its casing", async () => {
+    reply = () => new Response("<!doctype html><html><title>Login</title></html>");
+    await assert.rejects(postSoap(settings, "StoreServiceWS", "<x/>"), (e: MatrikkelError) => e.status === 502 && /credentials/.test(e.message));
+  });
+
+  test("an answer without a SOAP body is a 502, not an empty list", async () => {
+    reply = () => new Response("<other:Envelope xmlns:other='x'><other:Nobody/></other:Envelope>");
+    await assert.rejects(postSoap(settings, "StoreServiceWS", "<x/>"), (e: MatrikkelError) => e.status === 502 && e.message === "Matrikkel answered with an unexpected format");
+    reply = () => new Response("<html/>");
+    await assert.rejects(postSoap(settings, "StoreServiceWS", "<x/>"), (e: MatrikkelError) => e.status === 502 && /unexpected format/.test(e.message));
+  });
+
+  test("an envelope with another prefix is read like soap:", async () => {
+    reply = () => new Response(soapText("find-one.xml").replaceAll("soap:", "SOAP-ENV:").replace("xmlns:soap=", "xmlns:SOAP-ENV="));
+    const parsed = await postSoap(settings, "MatrikkelenhetServiceWS", "<x/>");
+    assert.ok((parsed["soap:Envelope"] as Record<string, unknown>)["soap:Body"]);
+  });
+
+  test("a network error is 502 without the error's details", async () => {
+    reply = () => {
+      throw new TypeError("fetch failed: connect ECONNREFUSED 10.0.0.12:443");
+    };
+    await assert.rejects(
+      postSoap(settings, "StoreServiceWS", "<x/>"),
+      (e: MatrikkelError) => e.status === 502 && e.message === "Could not reach Matrikkel" && /ECONNREFUSED/.test(String((e.cause as Error).message))
+    );
+  });
+
   test("a slow Matrikkel times out with 504", async () => {
     reply = () =>
       new Promise((resolve, reject) => {
@@ -89,4 +117,12 @@ describe("postSoap", () => {
 
 test("cleanUpXml removes prefixes like the JavaScript version, keeping soap:", () => {
   assert.equal(cleanUpXml("<soap:Body><ns2:item><S:x/></ns2:item></soap:Body>"), "<soap:Body><item><x/></item></soap:Body>");
+});
+
+test("cleanUpXml gives the envelope's elements soap: whatever their prefix", () => {
+  assert.equal(
+    cleanUpXml("<SOAP-ENV:Envelope><env:Header/><env:Body><SOAP-ENV:Fault><faultcode>SOAP-ENV:Client</faultcode></SOAP-ENV:Fault></env:Body></SOAP-ENV:Envelope>"),
+    "<soap:Envelope><soap:Header/><soap:Body><soap:Fault><faultcode>SOAP-ENV:Client</faultcode></soap:Fault></soap:Body></soap:Envelope>"
+  );
+  assert.equal(cleanUpXml("<S:Envelope><S:Body><ns2:BodyPart/></S:Body></S:Envelope>"), "<soap:Envelope><soap:Body><BodyPart/></soap:Body></soap:Envelope>", "only those elements");
 });

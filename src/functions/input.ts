@@ -21,7 +21,8 @@ export const contextInput = z
         koordinatsystemKodeId: koordinatsystemKodeId.optional(),
         locale: z.string().max(20).optional(),
         systemVersion: z.string().max(40).optional(),
-        brukOriginaleKoordinater: z.coerce.boolean().optional()
+        // Not z.coerce.boolean(): it makes the string "false" true
+        brukOriginaleKoordinater: z.union([z.boolean(), z.enum(["true", "false"]).transform((value) => value === "true")]).optional()
       })
       .optional()
   })
@@ -71,7 +72,9 @@ export async function guarded(context: InvocationContext, run: () => Promise<Htt
     return await run();
   } catch (error) {
     if (error instanceof MatrikkelError) {
-      loglady.warn("{FunctionName}: {Message}", context.functionName, error.message);
+      // The cause (e.g. the network error) is logged here but never answered: it can name internal hosts
+      const cause = error.cause instanceof Error ? ` (${error.cause.message})` : "";
+      loglady.warn("{FunctionName}: {Message}{Cause}", context.functionName, error.message, cause);
       return problem(error.status, error.message);
     }
     loglady.errorException(error, "{FunctionName} failed", context.functionName);

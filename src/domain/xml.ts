@@ -9,7 +9,10 @@ export function list(value: unknown): Node[] {
   return (Array.isArray(value) ? value : [value]) as Node[];
 }
 
-/** The text of an element: a plain string, xml2js's { _: text }, or a wrapped { value } (ids). */
+/**
+ * The text of an element: a plain string, xml2js's { _: text }, a wrapped { value } (ids), or a wrapped
+ * { date } / { timestamp } (Matrikkel's dates, e.g. <slettetDato><date>2020-01-01</date></slettetDato>).
+ */
 export function text(value: unknown): string | undefined {
   if (value === undefined || value === null || value === "") return undefined;
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") return String(value);
@@ -17,6 +20,10 @@ export function text(value: unknown): string | undefined {
     const node = value as Node;
     if ("value" in node) return text(node.value);
     if ("_" in node) return text(node._);
+    // Only a lone date/timestamp child (attributes aside), so a larger object is never read as a date
+    const children = Object.keys(node).filter((key) => key !== "$");
+    const [only] = children;
+    if (children.length === 1 && (only === "date" || only === "timestamp")) return text(node[only]);
     if (node.$ && (node.$ as Node)["xsi:nil"] === "true") return undefined;
   }
   return undefined;

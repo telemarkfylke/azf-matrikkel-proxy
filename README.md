@@ -10,8 +10,8 @@ App Service built-in authentication validates the token and passes the caller in
 
 | Role | Can |
 |---|---|
-| `matrikkel.read` | Everything except FREG data |
-| `matrikkel.read.freg` | Also FREG data for persons (`?enrich=freg`, and the `freg` field on `/store`) |
+| `matrikkel.read` | Everything except FREG data and `POST /api/store` |
+| `matrikkel.read.freg` | Also FREG data for persons (`?enrich=freg`), and `POST /api/store`, which always adds FREG data |
 
 ## Endpoints
 
@@ -24,13 +24,13 @@ Every body can have `koordinatsystemKodeId` (Matrikkel's coordinate system: 24 =
 | `POST /api/v2/plots` | `{ ids: number[] }` | `{ plots: Plot[] }` with area and representative point |
 | `POST /api/v2/owners?enrich=freg,brreg` | `{ ids: number[] }` | `{ owners: Owner[] }`, with `freg` / `brreg` when asked for |
 | `POST /api/matrikkelenheter` | `{ polygon }` | The 1.x answer: `{ units: string[], koordinatsystemKodeId }` |
-| `POST /api/store` | `{ items: [{ type, namespace, value }] }` | The 1.x answer: `{ store: [ … ] }`, owners with `freg`/`brreg`, `handleManually`, `avviklet` … |
+| `POST /api/store` | `{ items: [{ type, namespace, value }] }` | The 1.x answer: `{ store: [ … ] }`, owners with `freg`/`brreg`, `handleManually`, `avviklet` … Needs `matrikkel.read.freg` (403 without it, 503 when FREG isn't configured): its callers decide who gets letters from the FREG data, so it is never answered without it |
 
 The types are in `src/domain/model.ts`. Lists are always lists and numbers are numbers.
 
-- **FREG** is asked with `includeFortrolig: false`, so a protected address (fortrolig, strengt fortrolig, klientadresse) never reaches this API; owners get `protectedAddress: true` and the grading instead. FREG and Brreg run a few at a time with a timeout; one that fails marks that owner (`freg: { error }`) and the rest are answered.
+- **FREG** is asked with `includeFortrolig: false`, so a protected address (fortrolig, strengt fortrolig, klientadresse) never reaches this API; owners get `protectedAddress: true` and the grading instead, and Matrikkel's own address for them is left out too. An ownership without an owner id in Matrikkel has no `ownerId` (skip it). FREG and Brreg run a few at a time with a timeout; one that fails marks that owner (`freg: { error }`) and the rest are answered.
 - **Errors** are `{ message }` with a status: 400 for invalid input (checked before Matrikkel is asked) or a Matrikkel validation fault, 401/403 for auth, 502 when Matrikkel, FREG or the credentials fail, 503 when FREG isn't configured, 504 when Matrikkel doesn't answer in time.
-- **The 1.x endpoints** answer like 1.x (checked against what 1.x answered, `test/fixtures/legacy`), with these fixes: a protected address no longer crashes a batch, a FREG failure marks the owner instead of failing the request, an empty search gives `units: []`, and a SOAP fault is an error status instead of a 200. They go away when masseutsendelse's old Vue app is retired.
+- **The 1.x endpoints** answer like 1.x (checked against what 1.x answered, `test/fixtures/legacy`), with these fixes: a protected address no longer crashes a batch, a FREG failure marks the owner instead of failing the request, an empty search gives `units: []`, a SOAP fault (or an answer without a SOAP body) is an error status instead of a 200, and `/store` refuses (403/503) instead of answering without FREG data. They go away when masseutsendelse's old Vue app is retired.
 
 ## Settings
 

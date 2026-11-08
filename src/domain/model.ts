@@ -7,7 +7,8 @@ export type Position = { x: number; y: number };
 
 export type Matrikkelnummer = { kommunenummer: string; gardsnummer: number; bruksnummer: number; festenummer: number; seksjonsnummer: number };
 
-export type Ownership = { id: number; type: string; ownerId: number; share?: { numerator: number; denominator: number } };
+/** `ownerId` is missing when Matrikkel's answer has no eierId: skip such an ownership instead of guessing an owner. */
+export type Ownership = { id: number; type: string; ownerId?: number; share?: { numerator: number; denominator: number } };
 
 export type Unit = {
   id: number;
@@ -85,7 +86,10 @@ export function toUnit(node: Node): Unit {
     type: xsiType(node) ?? "Matrikkelenhet",
     expired: bool(node.utgatt) ?? false,
     ownerships: list((node.eierforhold as Node | undefined)?.item).map((o) => {
-      const ownership: Ownership = { id: NUM(o.id), type: xsiType(o) ?? "Eierforhold", ownerId: NUM(o.eierId) };
+      const ownership: Ownership = { id: NUM(o.id), type: xsiType(o) ?? "Eierforhold" };
+      // No 0 fallback: callers look owners up by this id and send them letters, so it must be real
+      const ownerId = num(o.eierId);
+      if (ownerId !== undefined) ownership.ownerId = ownerId;
       const share = o.andel as Node | undefined;
       const numerator = num(share?.teller);
       const denominator = num(share?.nevner);

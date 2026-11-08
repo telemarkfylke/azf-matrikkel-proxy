@@ -40,10 +40,8 @@ describe("legacy /store answers like the JavaScript version", () => {
     assert.deepEqual([people[0]?.handleManually, people[0]?.fregError, people[0]?.freg], [true, true, undefined]);
   });
 
-  test("without FREG (caller lacks matrikkel.read.freg), persons get no FREG data", async () => {
-    const answer = await legacyStore(await soap("store-persons.xml"), { brreg, logger: silent });
-    assert.ok(!JSON.stringify(answer).includes('"freg"'));
-  });
+  // A caller without matrikkel.read.freg, or an API without FREG, is refused by the handler (403/503)
+  // instead of getting persons without FREG data: see the contract tests.
 });
 
 describe("legacy /matrikkelenheter", () => {

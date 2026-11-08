@@ -5,6 +5,7 @@ import { calls, context, FREG, failures, READ, request, reset } from "./setup.ts
 // Imported after setup.ts has set the environment
 const { searchUnits, getUnits, getPlots, getOwners } = await import("../../src/functions/v2.ts");
 const { legacyFindUnits, legacyGetObjects } = await import("../../src/functions/legacy.ts");
+const { resetServices } = await import("../../src/services.ts");
 
 const ctx = { koordinatsystemKodeId: 24, matrikkelContext: { klientIdentifikasjon: "contract" } };
 const polygon = [
@@ -102,6 +103,28 @@ describe("v2", () => {
     assert.equal((json(orgs).owners as Array<{ brreg: { deleted: boolean } }>)[0]?.brreg.deleted, true);
   });
 
+  test("a strengt fortrolig owner gets no address at all, neither Matrikkel's nor FREG's", async () => {
+    const res = await getOwners(request("v2/owners?enrich=freg", { ...ctx, ids: [501, 502] }, FREG), context);
+    assert.equal(res.status, 200);
+    const owners = json(res).owners as Array<{ id: number; postalAddress?: unknown; freg: { protectedAddress: boolean; postalAddress?: unknown } }>;
+    const hidden = owners.find((o) => o.id === 502);
+    assert.equal(hidden?.freg.protectedAddress, true);
+    assert.equal(hidden?.postalAddress, undefined);
+    assert.equal(hidden?.freg.postalAddress, undefined);
+    const answer = JSON.stringify(json(res));
+    for (const address of ["Skjult vei 2", "Skjult adresse", "Postboks 1", "Strengt fortrolig adresse"]) assert.ok(!answer.includes(address), address);
+    assert.ok(owners.find((o) => o.id === 501)?.postalAddress, "an unprotected owner keeps Matrikkel's address");
+  });
+
+  test('brukOriginaleKoordinater: the string "false" is false', async () => {
+    await searchUnits(request("v2/units/search", { ...ctx, matrikkelContext: { brukOriginaleKoordinater: "false" }, polygon }), context);
+    assert.match(calls[0]?.body ?? "", /<dom:brukOriginaleKoordinater>false</);
+    reset();
+    await searchUnits(request("v2/units/search", { ...ctx, matrikkelContext: { brukOriginaleKoordinater: "true" }, polygon }), context);
+    assert.match(calls[0]?.body ?? "", /<dom:brukOriginaleKoordinater>true</);
+    assert.equal((await searchUnits(request("v2/units/search", { ...ctx, matrikkelContext: { brukOriginaleKoordinater: "yes" }, polygon }), context)).status, 400);
+  });
+
   test("a FREG failure marks that owner and the rest are answered", async () => {
     failures.freg.add("01019012345");
     const res = await getOwners(request("v2/owners?enrich=freg", { ...ctx, ids: [501, 502] }, FREG), context);
@@ -139,18 +162,36 @@ describe("compatible endpoints", () => {
     );
     assert.ok(people[0]?.freg);
     assert.ok(people[1]?.brreg);
+  });
 
-    reset();
-    const withoutFreg = await legacyGetObjects(request("store", { ...ctx, items }, READ), context);
-    assert.ok(!JSON.stringify(json(withoutFreg)).includes('"freg"'));
-    assert.ok(!calls.some((c) => c.service === "freg"));
+  test("POST /store without matrikkel.read.freg is 403, not an answer silently without FREG data", async () => {
+    const items = [{ type: "PersonId", namespace: "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person", value: 501 }];
+    const res = await legacyGetObjects(request("store", { ...ctx, items }, READ), context);
+    assert.equal(res.status, 403);
+    assert.equal(json(res).message, "FREG data needs the matrikkel.read.freg role");
+    assert.equal(calls.length, 0, "neither Matrikkel nor FREG is asked");
+  });
+
+  test("POST /store is 503 when FREG isn't configured; /matrikkelenheter doesn't need FREG", async () => {
+    const saved = process.env.AZF_FREG_URL;
+    delete process.env.AZF_FREG_URL;
+    resetServices();
+    try {
+      const items = [{ type: "PersonId", namespace: "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person", value: 501 }];
+      assert.equal((await legacyGetObjects(request("store", { ...ctx, items }, FREG), context)).status, 503);
+      assert.equal(calls.length, 0);
+      assert.equal((await legacyFindUnits(request("matrikkelenheter", { ...ctx, polygon }, READ), context)).status, 200);
+    } finally {
+      process.env.AZF_FREG_URL = saved;
+      resetServices();
+    }
   });
 
   test("POST /store refuses ids and types that could change the SOAP request", async () => {
     const bad = [{ type: "PersonId><x", namespace: "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person", value: 1 }];
-    assert.equal((await legacyGetObjects(request("store", { ...ctx, items: bad }), context)).status, 400);
+    assert.equal((await legacyGetObjects(request("store", { ...ctx, items: bad }, FREG), context)).status, 400);
     const badNs = [{ type: "PersonId", namespace: "http://evil.test", value: 1 }];
-    assert.equal((await legacyGetObjects(request("store", { ...ctx, items: badNs }), context)).status, 400);
+    assert.equal((await legacyGetObjects(request("store", { ...ctx, items: badNs }, FREG), context)).status, 400);
     assert.equal(calls.length, 0);
   });
 });

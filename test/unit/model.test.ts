@@ -4,6 +4,7 @@ import { mapLimit, memoize } from "../../src/adapters/enrichment/limit.ts";
 import { soapBody } from "../../src/adapters/matrikkel/soap.ts";
 import { type FregInfo, foundUnitIds, mainPlotId, storeItems, toOwner, toPlot, toUnit } from "../../src/domain/model.ts";
 import { toBrregInfo, toFregInfo } from "../../src/domain/service.ts";
+import { text } from "../../src/domain/xml.ts";
 import { BRREG, maskedFreg, soap } from "../helpers.ts";
 
 describe("units, plots and owners from Matrikkel's answers", () => {
@@ -60,6 +61,23 @@ describe("units, plots and owners from Matrikkel's answers", () => {
       postalAddress: { lines: ["Gata 1"], postnummeromradeId: "3700" }
     });
     assert.deepEqual([owners[1]?.kind, owners[1]?.organisationForm, owners[1]?.postalAddress?.lines], ["organisation", "FYLK", ["Fylkesbakken 10"]]);
+  });
+
+  test("owners: Matrikkel's wrapped dates are read (<slettetDato><date>…</date></slettetDato>)", async () => {
+    const [owner] = storeItems(soapBody(await soap("store-person-deleted.xml"))).map(toOwner);
+    assert.deepEqual([owner?.id, owner?.kind, owner?.deletedDate], [504, "organisation", "2020-01-01"]);
+    assert.equal(text({ timestamp: "2025-03-01T10:00:00" }), "2025-03-01T10:00:00");
+    assert.equal(text({ $: { "xsi:type": "x" }, date: "2020-01-01" }), "2020-01-01", "attributes aside");
+    assert.equal(text({ date: "2020-01-01", other: "x" }), undefined, "only a lone date child");
+  });
+
+  test("an ownership without an owner id has no ownerId, not 0", () => {
+    const unit = toUnit({ id: { value: "1" }, eierforhold: { item: [{ id: { value: "2" } }, { id: { value: "3" }, eierId: { value: "501" } }] } });
+    assert.deepEqual(
+      unit.ownerships.map((o) => o.ownerId),
+      [undefined, 501]
+    );
+    assert.ok(!("ownerId" in (unit.ownerships[0] ?? {})));
   });
 
   test("unit ids from a polygon search: many, one or none", async () => {

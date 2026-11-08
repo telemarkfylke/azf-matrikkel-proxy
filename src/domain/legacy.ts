@@ -14,6 +14,10 @@ import type { Logger } from "../ports.ts";
 // - a failed FREG lookup marks that owner handleManually instead of failing the whole request
 // - FREG is asked with includeFortrolig: false, so protected addresses are masked (the grading stays)
 // - an empty polygon search gives units: [] instead of units: ""
+// - POST /store answers 403 without matrikkel.read.freg and 503 without FREG configured, instead of
+//   answering without FREG data (functions/legacy.ts)
+// - an envelope with another prefix (env:, SOAP-ENV: …) still answers soap:Envelope/soap:Body, and an
+//   answer without a SOAP body is a 502 instead of an empty list
 
 type AnyRecord = Record<string, unknown>;
 

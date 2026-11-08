@@ -5,11 +5,14 @@ import { DOMAIN_NAMESPACE } from "../adapters/matrikkel/soap.ts";
 import { legacyStore, legacyUnits } from "../domain/legacy.ts";
 import { ROLES } from "../domain/roles.ts";
 import { getServices } from "../services.ts";
-import { contextFrom, contextInput, guarded, invalid, MAX_IDS, ok, polygonInput, readJson } from "./input.ts";
+import { contextFrom, contextInput, guarded, invalid, MAX_IDS, ok, polygonInput, problem, readJson } from "./input.ts";
 
 // POST /matrikkelenheter and POST /store with the JavaScript version's answer shape (domain/legacy.ts),
-// for callers that still read it. FREG data is only added for callers with matrikkel.read.freg.
-// Remove after the switch to the new frontend.
+// for callers that still read it. Remove after the switch to the new frontend.
+//
+// /store always adds FREG data, so it needs matrikkel.read.freg and a configured FREG. Its callers
+// decide who gets letters from that data (kanIkkeKontaktes, handleManually), so an answer silently
+// without FREG would look like "everyone can be contacted". /matrikkelenheter only needs matrikkel.read.
 
 const storeInput = contextInput.extend({
   items: z
@@ -46,17 +49,14 @@ export const legacyFindUnits: HttpHandler = withAuth([ROLES.read], (request, con
 
 export const legacyGetObjects: HttpHandler = withAuth([ROLES.read], (request, context, caller) =>
   guarded(context, async () => {
+    if (!caller.roles.has(ROLES.readFreg)) return problem(403, "FREG data needs the matrikkel.read.freg role");
     const parsed = storeInput.safeParse(await readJson(request));
     if (!parsed.success) return invalid(parsed.error.issues);
     const services = getServices();
+    if (!services.freg) return problem(503, "FREG is not configured for this API");
     const items = parsed.data.items.map((item) => ({ type: item.type, namespace: (item.namespace ?? item._namespace) as string, value: item.value }));
-    const withFreg = caller.roles.has(ROLES.readFreg);
-    const answer = await legacyStore(await services.matrikkel.getObjects(items, contextFrom(parsed.data)), {
-      brreg: services.brreg,
-      logger: services.logger,
-      ...(withFreg && services.freg ? { freg: services.freg } : {})
-    });
-    services.logger.info("store by {AppId} ({ObjectId}): {Count} ids{Freg}", caller.appId ?? caller.name ?? "-", caller.objectId, items.length, withFreg ? " with FREG" : "");
+    const answer = await legacyStore(await services.matrikkel.getObjects(items, contextFrom(parsed.data)), { brreg: services.brreg, logger: services.logger, freg: services.freg });
+    services.logger.info("store by {AppId} ({ObjectId}): {Count} ids with FREG", caller.appId ?? caller.name ?? "-", caller.objectId, items.length);
     return ok(answer);
   })
 );

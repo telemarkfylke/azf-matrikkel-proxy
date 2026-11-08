@@ -109,6 +109,9 @@ export async function owners(deps: Dependencies, ids: readonly number[], ctx: Ma
     if (enrich.freg && fregLookup && owner.kind === "person" && owner.number) {
       try {
         owner.freg = toFregInfo(await fregLookup(owner.number));
+        // Matrikkel's own address for a person with a protected address (fortrolig, strengt fortrolig,
+        // klientadresse) can be the protected address or lead to it, so no address is sent for them.
+        if ("protectedAddress" in owner.freg && owner.freg.protectedAddress) delete owner.postalAddress;
       } catch (error) {
         deps.logger.warn("FREG lookup for owner {OwnerId} failed: {Message}", owner.id, (error as Error).message);
         owner.freg = { error: "FREG svarte ikke for denne personen." };
