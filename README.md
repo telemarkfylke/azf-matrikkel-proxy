@@ -59,3 +59,5 @@ The contract tests call the real handlers with msw standing in for Matrikkel, az
 ## Deploying
 
 `deploy-test.yml` deploys to TEST on push to `main`; `deploy-prod.yml` to PROD when a release is published.
+
+Deploys use GitHub OIDC: the deploy job runs in the GitHub environment `test` or `prod`, whose variables `AZURE_CLIENT_ID`, `AZURE_TENANT_ID` and `AZURE_SUBSCRIPTION_ID` name the deploy identity in LZ - Masseutsendelse (`terraform/github_deploy.tf`). No publish profiles.

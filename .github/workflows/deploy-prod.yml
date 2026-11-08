@@ -1,5 +1,8 @@
 # Builds, tests and deploys to the PROD Function App when a release is published.
 # Docs for the deploy action: https://github.com/azure/functions-action
+# Deploys with GitHub OIDC: the deploy job runs in the GitHub environment "prod", whose variables
+# AZURE_CLIENT_ID, AZURE_TENANT_ID and AZURE_SUBSCRIPTION_ID name the deploy identity in
+# LZ - Masseutsendelse (terraform/github_deploy.tf). No publish profile.
 
 name: Build and deploy to Azure Function App - PROD
 
@@ -11,9 +14,14 @@ on:
 env:
   NODE_VERSION: '24.x'
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
   build-and-deploy:
     runs-on: self-hosted
+    environment: prod
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,10 +43,16 @@ jobs:
         shell: bash
         run: npm prune --omit=dev
 
+      - name: Log in to Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       - name: Deploy
         uses: Azure/functions-action@v1
         with:
           app-name: 'tfkplzmasseutmatrklapi'
           slot-name: 'Production'
           package: '.'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_PROD }}
