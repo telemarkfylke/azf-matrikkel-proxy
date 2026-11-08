@@ -1,0 +1,126 @@
+{
+  "request": {
+    "koordinatsystemKodeId": 24,
+    "items": [
+      {
+        "type": "PersonId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+        "value": 501
+      },
+      {
+        "type": "PersonId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+        "value": 503
+      }
+    ],
+    "matrikkelContext": {
+      "klientIdentifikasjon": "golden-test"
+    }
+  },
+  "soapRequest": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:stor=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store\" xmlns:dom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <stor:getObjects>\n      <stor:ids xmlns:ns1=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n        <dom:item xsi:type=\"ns1:PersonId\">\n          <dom:value>501</dom:value>\n        </dom:item>\n        <dom:item xsi:type=\"ns1:PersonId\">\n          <dom:value>503</dom:value>\n        </dom:item>\n      </stor:ids>\n      <stor:matrikkelContext>\n        <dom:locale>no_NB</dom:locale>\n        <dom:brukOriginaleKoordinater>false</dom:brukOriginaleKoordinater>\n        <dom:koordinatsystemKodeId>\n          <dom:value>24</dom:value>\n        </dom:koordinatsystemKodeId>\n        <dom:systemVersion>trunk</dom:systemVersion>\n        <dom:klientIdentifikasjon>golden-test</dom:klientIdentifikasjon>\n      </stor:matrikkelContext>\n    </stor:getObjects>\n  </soapenv:Body>\n</soapenv:Envelope>",
+  "fregCalls": ["01019012345"],
+  "brregCalls": ["940192226"],
+  "status": 200,
+  "body": {
+    "store": [
+      {
+        "$": {
+          "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"
+        },
+        "soap:Body": {
+          "$": {
+            "xmlns:ns8": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store",
+            "xmlns:ns2": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain",
+            "xmlns:ns3": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/geometri",
+            "xmlns:ns4": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/kommune",
+            "xmlns:ns5": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+            "xmlns:ns6": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+            "xmlns:ns7": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/adresse",
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+          },
+          "return": [
+            {
+              "_type": "FysiskPerson",
+              "id": {
+                "_type": "FysiskPersonId",
+                "value": "501"
+              },
+              "nummer": "01019012345",
+              "navn": "Nordmann Kari",
+              "postadresse": {
+                "adresselinje1": "Gata 1",
+                "postnummeromradeId": "3700",
+                "landKodeId": "0"
+              },
+              "etternavn": "Nordmann",
+              "fornavn": "Kari",
+              "bostedsadresse": {
+                "kommunenummer": "4003",
+                "postnummer": "3700"
+              },
+              "freg": {
+                "foedselsEllerDNummer": "01019012345",
+                "status": "bosatt",
+                "kanKontaktes": true,
+                "fornavn": "Kari",
+                "etternavn": "Nordmann",
+                "fulltnavn": "Kari Nordmann",
+                "foedselsdato": "1990-01-01",
+                "alder": 36,
+                "doedsfall": null,
+                "adressebeskyttelse": [],
+                "bostedsadresse": {
+                  "adressegradering": "ugradert",
+                  "adresse": "Gata 1",
+                  "postnummer": "3700",
+                  "poststed": "SKIEN",
+                  "kommunenummer": "4003"
+                },
+                "postadresse": {
+                  "adresse": "Gata 1",
+                  "postnummer": "3700",
+                  "poststed": "SKIEN"
+                }
+              }
+            },
+            {
+              "_type": "JuridiskPerson",
+              "id": {
+                "_type": "JuridiskPersonId",
+                "value": "503"
+              },
+              "nummer": "940192226",
+              "navn": "TELEMARK FYLKESKOMMUNE",
+              "forretningsadresse": {
+                "adresselinje1": "Fylkesbakken 10",
+                "postnummeromradeId": "3715"
+              },
+              "organisasjonsformKode": "FYLK",
+              "brreg": {
+                "organisasjonsnummer": "940192226",
+                "navn": "TELEMARK FYLKESKOMMUNE",
+                "organisasjonsform": {
+                  "kode": "FYLK",
+                  "beskrivelse": "Fylkeskommune"
+                },
+                "postadresse": {
+                  "land": "Norge",
+                  "postnummer": "3706",
+                  "poststed": "SKIEN",
+                  "adresse": "Postboks 2844"
+                },
+                "forretningsadresse": {
+                  "land": "Norge",
+                  "postnummer": "3715",
+                  "poststed": "SKIEN",
+                  "adresse": "Fylkesbakken 10"
+                },
+                "slettedato": "2020-04-01"
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

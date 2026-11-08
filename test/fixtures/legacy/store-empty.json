@@ -1,0 +1,22 @@
+{
+  "request": {
+    "koordinatsystemKodeId": 24,
+    "items": [
+      {
+        "type": "MatrikkelenhetId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+        "value": 999
+      }
+    ],
+    "matrikkelContext": {
+      "klientIdentifikasjon": "golden-test"
+    }
+  },
+  "soapRequest": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:stor=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store\" xmlns:dom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <stor:getObjects>\n      <stor:ids xmlns:ns1=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n        <dom:item xsi:type=\"ns1:MatrikkelenhetId\">\n          <dom:value>999</dom:value>\n        </dom:item>\n      </stor:ids>\n      <stor:matrikkelContext>\n        <dom:locale>no_NB</dom:locale>\n        <dom:brukOriginaleKoordinater>false</dom:brukOriginaleKoordinater>\n        <dom:koordinatsystemKodeId>\n          <dom:value>24</dom:value>\n        </dom:koordinatsystemKodeId>\n        <dom:systemVersion>trunk</dom:systemVersion>\n        <dom:klientIdentifikasjon>golden-test</dom:klientIdentifikasjon>\n      </stor:matrikkelContext>\n    </stor:getObjects>\n  </soapenv:Body>\n</soapenv:Envelope>",
+  "fregCalls": [],
+  "brregCalls": [],
+  "status": 200,
+  "body": {
+    "store": [""]
+  }
+}

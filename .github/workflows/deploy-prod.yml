@@ -1,44 +1,44 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# Builds, tests and deploys to the PROD Function App when a release is published.
+# Docs for the deploy action: https://github.com/azure/functions-action
 
-name: Build and deploy Node.js project to Azure Function App - PROD
+name: Build and deploy to Azure Function App - PROD
 
 on:
   release:
     types: [published]
-    branches: [main]
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '18.x' # set this to the node version to use (supports 8.x, 10.x, 12.x)
+  NODE_VERSION: '24.x'
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
     steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node ${{ env.NODE_VERSION }} Environment
-        uses: actions/setup-node@v1
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Npm'
+      # npm test: lint, typecheck, unit tests, contract tests, build
+      - name: Install, build and test
         shell: bash
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          npm install
-          npm run build --if-present
-          npm run test --if-present
-          popd
+          npm ci
+          npm test
 
-      - name: 'Run Azure Functions Action'
+      # Only runtime dependencies go to Azure; .funcignore leaves out src and test
+      - name: Remove dev dependencies
+        shell: bash
+        run: npm prune --omit=dev
+
+      - name: Deploy
         uses: Azure/functions-action@v1
-        id: fa
         with:
           app-name: 'tfkplzmasseutmatrklapi'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
+          package: '.'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_PROD }}

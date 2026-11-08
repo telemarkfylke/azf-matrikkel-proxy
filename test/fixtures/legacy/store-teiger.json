@@ -1,0 +1,79 @@
+{
+  "request": {
+    "koordinatsystemKodeId": 24,
+    "items": [
+      {
+        "type": "TeigId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+        "value": 7001
+      },
+      {
+        "type": "TeigId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+        "value": 7002
+      }
+    ],
+    "matrikkelContext": {
+      "klientIdentifikasjon": "golden-test"
+    }
+  },
+  "soapRequest": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:stor=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store\" xmlns:dom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <stor:getObjects>\n      <stor:ids xmlns:ns1=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n        <dom:item xsi:type=\"ns1:TeigId\">\n          <dom:value>7001</dom:value>\n        </dom:item>\n        <dom:item xsi:type=\"ns1:TeigId\">\n          <dom:value>7002</dom:value>\n        </dom:item>\n      </stor:ids>\n      <stor:matrikkelContext>\n        <dom:locale>no_NB</dom:locale>\n        <dom:brukOriginaleKoordinater>false</dom:brukOriginaleKoordinater>\n        <dom:koordinatsystemKodeId>\n          <dom:value>24</dom:value>\n        </dom:koordinatsystemKodeId>\n        <dom:systemVersion>trunk</dom:systemVersion>\n        <dom:klientIdentifikasjon>golden-test</dom:klientIdentifikasjon>\n      </stor:matrikkelContext>\n    </stor:getObjects>\n  </soapenv:Body>\n</soapenv:Envelope>",
+  "fregCalls": [],
+  "brregCalls": [],
+  "status": 200,
+  "body": {
+    "store": [
+      {
+        "$": {
+          "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"
+        },
+        "soap:Body": {
+          "$": {
+            "xmlns:ns8": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store",
+            "xmlns:ns2": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain",
+            "xmlns:ns3": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/geometri",
+            "xmlns:ns4": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/kommune",
+            "xmlns:ns5": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+            "xmlns:ns6": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+            "xmlns:ns7": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/adresse",
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+          },
+          "return": [
+            {
+              "_type": "Teig",
+              "id": {
+                "_type": "TeigId",
+                "value": "7001"
+              },
+              "lagretBeregnetAreal": "1532.4",
+              "representasjonspunkt": {
+                "koordinatsystemKodeId": "24",
+                "position": {
+                  "x": "9.6105",
+                  "y": "59.2052",
+                  "z": "0.0"
+                }
+              }
+            },
+            {
+              "_type": "Teig",
+              "id": {
+                "_type": "TeigId",
+                "value": "7002"
+              },
+              "lagretBeregnetAreal": "1532.4",
+              "representasjonspunkt": {
+                "koordinatsystemKodeId": "24",
+                "position": {
+                  "x": "9.6142",
+                  "y": "59.2031",
+                  "z": "0.0"
+                }
+              }
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

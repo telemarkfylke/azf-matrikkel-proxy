@@ -1,0 +1,24 @@
+{
+  "request": {
+    "koordinatsystemKodeId": 24,
+    "items": [
+      {
+        "type": "PersonId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+        "value": 501
+      },
+      {
+        "type": "PersonId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+        "value": 502
+      }
+    ],
+    "matrikkelContext": {
+      "klientIdentifikasjon": "golden-test"
+    }
+  },
+  "soapRequest": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:stor=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store\" xmlns:dom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <stor:getObjects>\n      <stor:ids xmlns:ns1=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n        <dom:item xsi:type=\"ns1:PersonId\">\n          <dom:value>501</dom:value>\n        </dom:item>\n        <dom:item xsi:type=\"ns1:PersonId\">\n          <dom:value>502</dom:value>\n        </dom:item>\n      </stor:ids>\n      <stor:matrikkelContext>\n        <dom:locale>no_NB</dom:locale>\n        <dom:brukOriginaleKoordinater>false</dom:brukOriginaleKoordinater>\n        <dom:koordinatsystemKodeId>\n          <dom:value>24</dom:value>\n        </dom:koordinatsystemKodeId>\n        <dom:systemVersion>trunk</dom:systemVersion>\n        <dom:klientIdentifikasjon>golden-test</dom:klientIdentifikasjon>\n      </stor:matrikkelContext>\n    </stor:getObjects>\n  </soapenv:Body>\n</soapenv:Envelope>",
+  "fregCalls": ["01019012345", "02029012345"],
+  "brregCalls": [],
+  "threw": "Cannot convert undefined or null to object"
+}

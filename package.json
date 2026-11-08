@@ -1,25 +1,35 @@
 {
-  "name": "",
-  "version": "1.1.4",
-  "description": "",
-  "scripts": {
-    "start": "func start",
-    "test": "echo \"No tests yet...\""
-  },
-  "dependencies": {
-    "@azure/msal-node": "^2.6.4",
-    "@vtfk/logger": "^6.3.3",
-    "@vtfk/sjablong": "^1.0.2",
-    "axios": "^1.6.7",
-    "node-cache": "^5.1.2",
-    "node-fetch": "^2.6.7",
-    "npm": "^10.4.0",
-    "prettify-xml": "^1.2.0",
-    "xml-query": "^1.5.0",
-    "xml-reader": "^2.4.3",
-    "xml2js": "^0.6.2"
-  },
-  "devDependencies": {
-    "azure-functions-core-tools": "^4.x"
-  }
+	"name": "azf-matrikkel-proxy",
+	"version": "2.0.0",
+	"description": "API in front of Kartverket's Matrikkel: properties inside a polygon, properties and owners by id, optionally with FREG and Brreg.",
+	"type": "module",
+	"scripts": {
+		"lint": "biome check",
+		"lint:fix": "biome check --write",
+		"typecheck": "tsc --noEmit",
+		"build": "tsc -p tsconfig.build.json",
+		"prestart": "npm run build",
+		"start": "func start",
+		"test": "npm run lint && npm run typecheck && npm run test:unit && npm run test:contract && npm run build",
+		"test:unit": "node --test \"test/unit/**/*.test.ts\"",
+		"test:contract": "node --test --test-isolation=none \"test/contract/**/*.test.ts\""
+	},
+	"engines": {
+		"node": ">=24"
+	},
+	"main": "dist/src/index.js",
+	"dependencies": {
+		"@azure/functions": "^4.16.5",
+		"@azure/identity": "^4.13.3",
+		"@vestfoldfylke/loglady": "^2.1.0",
+		"xml2js": "^0.6.2",
+		"zod": "^4.6.7"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "2.5.14",
+		"@types/node": "^24.19.2",
+		"@types/xml2js": "^0.4.14",
+		"msw": "^2.15.0",
+		"typescript": "^7.0.2"
+	}
 }
