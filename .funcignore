@@ -1,0 +1,14 @@
+*.js.map
+*.ts
+.git*
+.vscode
+local.settings.json
+prod.json
+test
+tsconfig.json
+tsconfig.build.json
+scripts
+docs
+src
+.sandbox
+vfk-local.settings.json

@@ -1,7 +1,11 @@
-# Docs for the Azure Web Apps Deploy action: https://github.com/azure/functions-action
-# More GitHub Actions for Azure: https://github.com/Azure/actions
+# Builds, tests and deploys to the TEST Function App on push to main (or when started by hand,
+# on any branch: Actions → this workflow → Run workflow → pick the branch).
+# Docs for the deploy action: https://github.com/azure/functions-action
+# Deploys with GitHub OIDC: the deploy job runs in the GitHub environment "test", whose variables
+# AZURE_CLIENT_ID, AZURE_TENANT_ID and AZURE_SUBSCRIPTION_ID name the deploy identity in
+# LZ - Masseutsendelse (terraform/github_deploy.tf). No publish profile.
 
-name: Build and deploy Node.js project to Azure Function App - TEST
+name: Build and deploy to Azure Function App - TEST
 
 on:
   push:
@@ -10,35 +14,47 @@ on:
   workflow_dispatch:
 
 env:
-  AZURE_FUNCTIONAPP_PACKAGE_PATH: '.' # set this to the path to your web app project, defaults to the repository root
-  NODE_VERSION: '22.x' # set this to the node version to use
+  NODE_VERSION: '24.x'
+
+permissions:
+  contents: read
+  id-token: write
 
 jobs:
   build-and-deploy:
     runs-on: self-hosted
+    environment: test
     steps:
-      - name: 'Checkout GitHub Action'
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Setup Node ${{ env.NODE_VERSION }} Environment
-        uses: actions/setup-node@v1
+      - name: Setup Node ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
 
-      - name: 'Resolve Project Dependencies Using Npm'
+      # npm test: lint, typecheck, unit tests, contract tests, build
+      - name: Install, build and test
         shell: bash
         run: |
-          pushd './${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}'
-          npm install
-          npm run build --if-present
-          npm run test --if-present
-          popd
+          npm ci
+          npm test
 
-      - name: 'Run Azure Functions Action'
+      # Only runtime dependencies go to Azure; .funcignore leaves out src and test
+      - name: Remove dev dependencies
+        shell: bash
+        run: npm prune --omit=dev
+
+      - name: Log in to Azure (OIDC)
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Deploy
         uses: Azure/functions-action@v1
-        id: fa
         with:
           app-name: 'tfkdlzmasseutmatrklapi'
           slot-name: 'Production'
-          package: ${{ env.AZURE_FUNCTIONAPP_PACKAGE_PATH }}
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_DEV }}
+          package: '.'

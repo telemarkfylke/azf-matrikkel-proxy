@@ -1,30 +1,35 @@
 {
 	"name": "azf-matrikkel-proxy",
-	"version": "1.3.4",
-	"description": "API used to contact the matrikkel api using rest",
+	"version": "2.0.0",
+	"description": "API in front of Kartverket's Matrikkel: properties inside a polygon, properties and owners by id, optionally with FREG and Brreg.",
+	"type": "module",
 	"scripts": {
 		"lint": "biome check",
 		"lint:fix": "biome check --write",
+		"typecheck": "tsc --noEmit",
+		"build": "tsc -p tsconfig.build.json",
+		"prestart": "npm run build",
 		"start": "func start",
-		"start:2": "func start --port=7072",
-		"test": "npm run lint"
+		"test": "npm run lint && npm run typecheck && npm run test:unit && npm run test:contract && npm run build",
+		"test:unit": "node --test \"test/unit/**/*.test.ts\"",
+		"test:contract": "node --test --test-isolation=none \"test/contract/**/*.test.ts\""
 	},
 	"engines": {
-		"node": ">=18.x"
+		"node": ">=24"
 	},
-	"main": "src/functions/*.js",
+	"main": "dist/src/index.js",
 	"dependencies": {
-		"@azure/functions": "^4.17.0",
-		"@azure/identity": "^4.14.1",
+		"@azure/functions": "^4.16.5",
+		"@azure/identity": "^4.13.3",
 		"@vestfoldfylke/loglady": "^2.1.0",
-		"@vtfk/sjablong": "^1.1.0",
-		"prettify-xml": "^1.2.0",
-		"xml-query": "^1.5.0",
-		"xml-reader": "^2.4.3",
-		"xml2js": "^0.6.2"
+		"xml2js": "^0.6.2",
+		"zod": "^4.6.7"
 	},
 	"devDependencies": {
-		"@biomejs/biome": "2.6.3",
-		"@types/node": "^26.6.5"
+		"@biomejs/biome": "2.5.14",
+		"@types/node": "^24.19.2",
+		"@types/xml2js": "^0.4.14",
+		"msw": "^2.15.0",
+		"typescript": "^7.0.2"
 	}
 }

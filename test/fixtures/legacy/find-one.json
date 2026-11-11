@@ -1,0 +1,17 @@
+{
+  "request": {
+    "koordinatsystemKodeId": 24,
+    "polygon": [[9.6, 59.2], [9.62, 59.2], [9.6, 59.2]],
+    "matrikkelContext": {
+      "klientIdentifikasjon": "golden-test"
+    }
+  },
+  "soapRequest": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:mat=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/matrikkelenhet\" xmlns:mat1=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet\" xmlns:geom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/geometri\" xmlns:dom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <mat:findMatrikkelenheter>\n      <mat:matrikkelenhetsokModel>\n        <mat1:selectionPolygon>\n          <geom:polygon>\n            <geom:koordinatsystemKodeId>\n              <dom:value>24</dom:value>\n            </geom:koordinatsystemKodeId>\n            <geom:ytreAvgrensning>\n              <geom:positions>\n                <geom:item>\n                  <geom:x>9.6</geom:x>\n                  <geom:y>59.2</geom:y>\n                  <geom:z>0</geom:z>\n                </geom:item>\n                <geom:item>\n                  <geom:x>9.62</geom:x>\n                  <geom:y>59.2</geom:y>\n                  <geom:z>0</geom:z>\n                </geom:item>\n                <geom:item>\n                  <geom:x>9.6</geom:x>\n                  <geom:y>59.2</geom:y>\n                  <geom:z>0</geom:z>\n                </geom:item>\n              </geom:positions>\n            </geom:ytreAvgrensning>\n          </geom:polygon>\n          <geom:koordinatsystemKodeId>\n            <dom:value>24</dom:value>\n          </geom:koordinatsystemKodeId>\n        </mat1:selectionPolygon>\n      </mat:matrikkelenhetsokModel>\n      <mat:matrikkelContext>\n        <dom:locale>no_NB</dom:locale>\n        <dom:brukOriginaleKoordinater>false</dom:brukOriginaleKoordinater>\n        <dom:koordinatsystemKodeId>\n          <dom:value>24</dom:value>\n        </dom:koordinatsystemKodeId>\n        <dom:systemVersion>trunk</dom:systemVersion>\n        <dom:klientIdentifikasjon>golden-test</dom:klientIdentifikasjon>\n      </mat:matrikkelContext>\n    </mat:findMatrikkelenheter>\n  </soapenv:Body>\n</soapenv:Envelope>",
+  "fregCalls": [],
+  "brregCalls": [],
+  "status": 200,
+  "body": {
+    "units": ["101"],
+    "koordinatsystemKodeId": 24
+  }
+}

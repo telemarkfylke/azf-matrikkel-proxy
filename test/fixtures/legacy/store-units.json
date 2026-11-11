@@ -1,0 +1,146 @@
+{
+  "request": {
+    "koordinatsystemKodeId": 24,
+    "items": [
+      {
+        "type": "MatrikkelenhetId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+        "value": 101
+      },
+      {
+        "type": "MatrikkelenhetId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+        "value": 102
+      },
+      {
+        "type": "MatrikkelenhetId",
+        "namespace": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+        "value": 103
+      }
+    ],
+    "matrikkelContext": {
+      "klientIdentifikasjon": "golden-test"
+    }
+  },
+  "soapRequest": "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:stor=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store\" xmlns:dom=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain\">\n  <soapenv:Header/>\n  <soapenv:Body>\n    <stor:getObjects>\n      <stor:ids xmlns:ns1=\"http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\">\n        <dom:item xsi:type=\"ns1:MatrikkelenhetId\">\n          <dom:value>101</dom:value>\n        </dom:item>\n        <dom:item xsi:type=\"ns1:MatrikkelenhetId\">\n          <dom:value>102</dom:value>\n        </dom:item>\n        <dom:item xsi:type=\"ns1:MatrikkelenhetId\">\n          <dom:value>103</dom:value>\n        </dom:item>\n      </stor:ids>\n      <stor:matrikkelContext>\n        <dom:locale>no_NB</dom:locale>\n        <dom:brukOriginaleKoordinater>false</dom:brukOriginaleKoordinater>\n        <dom:koordinatsystemKodeId>\n          <dom:value>24</dom:value>\n        </dom:koordinatsystemKodeId>\n        <dom:systemVersion>trunk</dom:systemVersion>\n        <dom:klientIdentifikasjon>golden-test</dom:klientIdentifikasjon>\n      </stor:matrikkelContext>\n    </stor:getObjects>\n  </soapenv:Body>\n</soapenv:Envelope>",
+  "fregCalls": [],
+  "brregCalls": [],
+  "status": 200,
+  "body": {
+    "store": [
+      {
+        "$": {
+          "xmlns:soap": "http://schemas.xmlsoap.org/soap/envelope/"
+        },
+        "soap:Body": {
+          "$": {
+            "xmlns:ns8": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/service/store",
+            "xmlns:ns2": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain",
+            "xmlns:ns3": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/geometri",
+            "xmlns:ns4": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/kommune",
+            "xmlns:ns5": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/matrikkelenhet",
+            "xmlns:ns6": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/person",
+            "xmlns:ns7": "http://matrikkel.statkart.no/matrikkelapi/wsapi/v1/domain/adresse",
+            "xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance"
+          },
+          "return": [
+            {
+              "_type": "Grunneiendom",
+              "id": {
+                "_type": "MatrikkelenhetId",
+                "value": "101"
+              },
+              "matrikkelnummer": {
+                "kommuneId": "4003",
+                "gardsnummer": "10",
+                "bruksnummer": "5",
+                "festenummer": "0",
+                "seksjonsnummer": "0"
+              },
+              "tinglyst": "true",
+              "bruksnavn": "Nordre Ås",
+              "teigerForMatrikkelenhet": [
+                {
+                  "id": "81001",
+                  "hovedteig": "false",
+                  "teigId": "7009"
+                },
+                {
+                  "id": "81002",
+                  "hovedteig": "true",
+                  "teigId": "7001"
+                }
+              ],
+              "eierforhold": [
+                {
+                  "_type": "TinglystEierforhold",
+                  "id": "9001",
+                  "andel": {
+                    "teller": "1",
+                    "nevner": "2"
+                  },
+                  "eierId": "501"
+                },
+                {
+                  "_type": "TinglystEierforhold",
+                  "id": "9002",
+                  "andel": {
+                    "teller": "1",
+                    "nevner": "2"
+                  },
+                  "eierId": "502"
+                }
+              ],
+              "utgatt": "false"
+            },
+            {
+              "_type": "Seksjon",
+              "id": {
+                "_type": "MatrikkelenhetId",
+                "value": "102"
+              },
+              "matrikkelnummer": {
+                "kommuneId": "4003",
+                "gardsnummer": "10",
+                "bruksnummer": "6",
+                "festenummer": "0",
+                "seksjonsnummer": "2"
+              },
+              "teigerForMatrikkelenhet": {
+                "id": "81003",
+                "hovedteig": "true",
+                "teigId": "7002"
+              },
+              "eierforhold": {
+                "_type": "TinglystEierforhold",
+                "id": "9003",
+                "andel": {
+                  "teller": "1",
+                  "nevner": "1"
+                },
+                "eierId": "503"
+              },
+              "utgatt": "false"
+            },
+            {
+              "_type": "Grunneiendom",
+              "id": {
+                "_type": "MatrikkelenhetId",
+                "value": "103"
+              },
+              "matrikkelnummer": {
+                "kommuneId": "4003",
+                "gardsnummer": "11",
+                "bruksnummer": "1",
+                "festenummer": "0",
+                "seksjonsnummer": "0"
+              },
+              "bruksnavn": "Utmark",
+              "utgatt": "false"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}
